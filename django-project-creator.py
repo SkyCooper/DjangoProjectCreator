@@ -19,7 +19,7 @@ class bcolors:
 
 
 def pip_install(package: str):
-    check_output([sys.executable, "-m", "pip", "install", package])
+    run(f"./env/bin/python -m pip install {package}", shell=True, stdout=DEVNULL)
 
 
 def main():
@@ -84,15 +84,14 @@ def main():
         print(f"{bcolors.BOLD}{bcolors.FAIL}{ex}{bcolors.ENDC}")
         logger.fatal(ex)
         exit(1)
-    exit(0)
 
     # Rest is not working
     # TODO figure out how to activate venv programmatically.
     try:
         if windows:
-            run([".\\env\\Scripts\\activate"], stdout=DEVNULL, check=True)
+            run([".\\env\\Scripts\\activate"], stdout=DEVNULL, shell=True, check=True)
         else:
-            os.system("/bin/bash ./env/bin/activate")
+            run("source ./env/bin/activate", stdout=DEVNULL, shell=True, check=True)
         print(
             f"{bcolors.OKGREEN}Activated virtual environment: {bcolors.BOLD}{bcolors.OKBLUE}{project_name}/env{bcolors.ENDC}"
         )
@@ -111,6 +110,83 @@ def main():
         print(f"{bcolors.BOLD}{bcolors.FAIL}{ex}{bcolors.ENDC}")
         logger.fatal(ex)
         exit(1)
+
+    try:
+        print(f"{bcolors.OKCYAN}Creating requirements.txt...{bcolors.ENDC}")
+        run("./env/bin/python -m pip freeze > requirements.txt", shell=True, check=True)
+        print(f"{bcolors.OKGREEN}Created requirements.txt.{bcolors.ENDC}")
+        logger.info("Created requirements.txt.")
+        with open("requirements.txt", "r") as reqs:
+            print(
+                f"\n{bcolors.BOLD}{bcolors.UNDERLINE}{bcolors.HEADER}Required packages:{bcolors.ENDC}\n"
+            )
+            print(f"{bcolors.HEADER}{reqs.read()}{bcolors.ENDC}")
+    except Exception as ex:
+        print(f"{bcolors.BOLD}{bcolors.FAIL}{ex}{bcolors.ENDC}")
+        logger.fatal(ex)
+        exit(1)
+    try:
+        print(f"{bcolors.OKCYAN}Creating Django project 'main'...{bcolors.ENDC}")
+        run("django-admin startproject main .", shell=True, check=True)
+        print(f"{bcolors.OKGREEN}Created Django project.{bcolors.ENDC}")
+        logger.info("Created Django project.")
+    except Exception as ex:
+        print(f"{bcolors.BOLD}{bcolors.FAIL}{ex}{bcolors.ENDC}")
+        logger.fatal(ex)
+        exit(1)
+
+    try:
+        print(f"{bcolors.OKCYAN}Starting Django migration...{bcolors.ENDC}")
+        run("./env/bin/python manage.py migrate", shell=True, check=True)
+        print(f"{bcolors.OKGREEN}Django migration is successful.{bcolors.ENDC}")
+        logger.info("Django migration is successful.")
+    except Exception as ex:
+        print(f"{bcolors.BOLD}{bcolors.FAIL}{ex}{bcolors.ENDC}")
+        logger.fatal(ex)
+        exit(1)
+
+    try:
+        print(f"{bcolors.OKCYAN}Creating superuser...{bcolors.ENDC}")
+        run("./env/bin/python manage.py createsuperuser", shell=True, check=True)
+        print(f"{bcolors.OKGREEN}Created superuser.{bcolors.ENDC}")
+        logger.info("Created superuser.")
+    except Exception as ex:
+        print(f"{bcolors.BOLD}{bcolors.FAIL}{ex}{bcolors.ENDC}")
+        logger.fatal(ex)
+        exit(1)
+
+    try:
+        gitignore_url = "https://www.toptal.com/developers/gitignore/api/django"
+        opener = urllib.request.build_opener()
+        opener.addheaders = [
+            (
+                "User-Agent",
+                "Mozilla/5.0 (X11; Linux x86_64; rv:108.0) Gecko/20100101 Firefox/108.0",
+            )
+        ]
+        with opener.open(gitignore_url) as url_file:
+            url_content = url_file.read()
+        print(
+            f"{bcolors.OKCYAN}Downloading .gitignore for Django project...{bcolors.ENDC}"
+        )
+        with opener.open(gitignore_url) as url_file:
+            url_content = url_file.read()
+            with open(".gitignore", "wb") as gitignore:
+                gitignore.write(url_content)
+
+        print(f"{bcolors.OKGREEN}Downloaded .gitignore successfully.{bcolors.ENDC}")
+        logger.info("Downloaded .gitignore successfully.")
+    except Exception as ex:
+        print(f"{bcolors.BOLD}{bcolors.FAIL}{ex}{bcolors.ENDC}")
+        logger.fatal(ex)
+        exit(1)
+    print(f"\n{bcolors.BOLD}{bcolors.OKGREEN}Created Django project.{bcolors.ENDC}\n")
+    print(
+        f"{bcolors.OKBLUE}Use following commands to start your project:{bcolors.ENDC}\n"
+    )
+    print(f"{bcolors.BOLD}{bcolors.OKCYAN}cd {project_name}{bcolors.ENDC}")
+    print(f"{bcolors.BOLD}{bcolors.OKCYAN}source env/bin/activate{bcolors.ENDC}")
+    exit(0)
 
 
 if __name__ == "__main__":
