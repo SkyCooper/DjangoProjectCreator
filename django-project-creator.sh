@@ -105,7 +105,15 @@ pip=pip
 python=python
 
 project=$1
-port=$2
+port=""
+
+if [ -z "$2" ];then
+    echo_info "No port number was provided. Using 8080"
+    port=8080
+else
+    port=$2
+fi
+
 
 logfile="$HOME/django_creator.log"
 
@@ -130,7 +138,7 @@ echo_info 'Your operating system is '$OSTYPE
 sleep 2
 echo_progress_start "Changing paths for OS"
 case "$OSTYPE" in
-  darwin*)  activation_path='.env/bin/activate' ;; 
+  darwin*)  activation_path='.env/bin/activate' ;;
   linux*)   activation_path='.env/bin/activate' ;;
   msys*)    activation_path='.env/Scripts/Activate' ;;
   cygwin*)  activation_path='.env/Scripts/Activate' ;;
@@ -223,7 +231,7 @@ else
     echo_error "Creating app core failed"
     sleep 2
     exit 1
-fi    
+fi
 
 #Creating Django Forms file
 echo_progress_start "Creating forms.py"
@@ -243,7 +251,7 @@ else
     echo_error "Creating template directory failed"
     sleep 2
     exit 1
-fi        
+fi
 
 #Creating Example Template
 echo_progress_start "Creating sample index.html"
@@ -265,12 +273,12 @@ else
     echo_error "Creating index.html failed"
     sleep 2
     exit 1
-fi    
+fi
 
 #Adding created app to the settings
 echo_progress_start "Editing settings.py"
 if sed -i "/django.contrib.staticfiles/a\    'main'," main/settings.py; then
-    echo_progress_done "Editing settings.py successfully"    
+    echo_progress_done "Editing settings.py successfully"
 else
     echo_error "Editing settings file failed"
     sleep 2
@@ -321,12 +329,15 @@ else
 fi
 
 sleep 2
-echo "${green}>>> Done${nc}"
-echo_progress_done "Django Project created successfully"
+echo_success "Django Project created successfully"
 sleep 2
 
 #Starting the Project
-echo_progress_start "Starting the Project Now"
-python manage.py runserver $port
-echo_progress_done "Project started successfully"
+echo_info "Starting the Project Now"
+if $python manage.py runserver $port; then
+    echo ""
+else
+    echo_error "Project could not be started."
+    exit 1
+fi
 deactivate
