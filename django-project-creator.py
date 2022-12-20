@@ -85,13 +85,11 @@ def main():
         logger.fatal(ex)
         exit(1)
 
-    # Rest is not working
-    # TODO figure out how to activate venv programmatically.
     try:
         if windows:
             run([".\\env\\Scripts\\activate"], stdout=DEVNULL, shell=True, check=True)
         else:
-            run("source ./env/bin/activate", stdout=DEVNULL, shell=True, check=True)
+            run(". ./env/bin/activate", stdout=DEVNULL, shell=True, check=True)
         print(
             f"{bcolors.OKGREEN}Activated virtual environment: {bcolors.BOLD}{bcolors.OKBLUE}{project_name}/env{bcolors.ENDC}"
         )
