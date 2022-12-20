@@ -18,10 +18,6 @@ class bcolors:
     UNDERLINE = "\033[4m"
 
 
-def pip_install(package: str):
-    run(f"./env/bin/python -m pip install {package}", shell=True, stdout=DEVNULL)
-
-
 def main():
     windows = True if os.name == "nt" else False
     logfile = f'{os.path.expanduser("~")}/django-project-creator.log'
@@ -87,7 +83,7 @@ def main():
 
     try:
         if windows:
-            run([".\\env\\Scripts\\activate"], stdout=DEVNULL, shell=True, check=True)
+            run(".\\env\\Scripts\\activate", stdout=DEVNULL, shell=True, check=True)
         else:
             run(". ./env/bin/activate", stdout=DEVNULL, shell=True, check=True)
         print(
@@ -101,7 +97,10 @@ def main():
 
     try:
         print(f"{bcolors.OKCYAN}Installing Django...{bcolors.ENDC}")
-        pip_install("django")
+        if windows:
+            run(f".\\env\\Scripts\\python -m pip install django", shell=True, stdout=DEVNULL, check=True)
+        else:
+            run(f"./env/bin/python -m pip install django", shell=True, stdout=DEVNULL, check=True)
         print(f"{bcolors.OKGREEN}Installed Django.{bcolors.ENDC}")
         logger.info("Installed Django.")
     except Exception as ex:
@@ -111,7 +110,10 @@ def main():
 
     try:
         print(f"{bcolors.OKCYAN}Creating requirements.txt...{bcolors.ENDC}")
-        run("./env/bin/python -m pip freeze > requirements.txt", shell=True, check=True)
+        if windows:
+            run(".\\env\\Scripts\\python -m pip freeze > requirements.txt", shell=True, check=True)
+        else:
+            run("./env/bin/python -m pip freeze > requirements.txt", shell=True, check=True)
         print(f"{bcolors.OKGREEN}Created requirements.txt.{bcolors.ENDC}")
         logger.info("Created requirements.txt.")
         with open("requirements.txt", "r") as reqs:
@@ -125,7 +127,11 @@ def main():
         exit(1)
     try:
         print(f"{bcolors.OKCYAN}Creating Django project 'main'...{bcolors.ENDC}")
-        run("django-admin startproject main .", shell=True, check=True)
+        
+        if windows:
+            run(".\\env\\Scripts\\python -m django startproject main .", shell=True, check=True)
+        else:
+            run("django-admin startproject main .", shell=True, check=True)
         print(f"{bcolors.OKGREEN}Created Django project.{bcolors.ENDC}")
         logger.info("Created Django project.")
     except Exception as ex:
@@ -135,7 +141,10 @@ def main():
 
     try:
         print(f"{bcolors.OKCYAN}Starting Django migration...{bcolors.ENDC}")
-        run("./env/bin/python manage.py migrate", shell=True, check=True)
+        if windows:
+            run(".\\env\\Scripts\\python manage.py migrate", shell=True, check=True)
+        else:
+            run("./env/bin/python manage.py migrate", shell=True, check=True)
         print(f"{bcolors.OKGREEN}Django migration is successful.{bcolors.ENDC}")
         logger.info("Django migration is successful.")
     except Exception as ex:
@@ -145,7 +154,10 @@ def main():
 
     try:
         print(f"{bcolors.OKCYAN}Creating superuser...{bcolors.ENDC}")
-        run("./env/bin/python manage.py createsuperuser", shell=True, check=True)
+        if windows:
+            run(".\\env\\Scripts\\python manage.py createsuperuser", shell=True, check=True)
+        else:
+            run("./env/bin/python manage.py createsuperuser", shell=True, check=True)
         print(f"{bcolors.OKGREEN}Created superuser.{bcolors.ENDC}")
         logger.info("Created superuser.")
     except Exception as ex:
@@ -183,7 +195,11 @@ def main():
         f"{bcolors.OKBLUE}Use following commands to start your project:{bcolors.ENDC}\n"
     )
     print(f"{bcolors.BOLD}{bcolors.OKCYAN}cd {project_name}{bcolors.ENDC}")
-    print(f"{bcolors.BOLD}{bcolors.OKCYAN}source env/bin/activate{bcolors.ENDC}")
+
+    if windows:
+        print(f"{bcolors.BOLD}{bcolors.OKCYAN}.\\env\\Scripts\\activate{bcolors.ENDC}")
+    else:
+        print(f"{bcolors.BOLD}{bcolors.OKCYAN}source env/bin/activate{bcolors.ENDC}")
     exit(0)
 
 
