@@ -6,6 +6,12 @@
 virtualenv
 ```
 
+## How to use
+
+```bash
+python django-project-creator.py <project-name>
+```
+
 ## Supported platforms:
 
 -   Linux (Bash/ZSH)
