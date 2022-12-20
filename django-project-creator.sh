@@ -124,6 +124,21 @@ else
     python=python3
 fi
 
+#OS Detection
+activation_path=''
+echo_info 'Your operating system is '$OSTYPE
+sleep 2
+echo_progress_start "Changing paths for OS"
+case "$OSTYPE" in
+  darwin*)  activation_path='.env/bin/activate' ;; 
+  linux*)   activation_path='.env/bin/activate' ;;
+  msys*)    activation_path='.env/Scripts/Activate' ;;
+  cygwin*)  activation_path='.env/Scripts/Activate' ;;
+  *)        echo_error "Path changing failed" ;;
+esac
+sleep 2
+echo_success "Paths changed successfully"
+###
 
 echo_progress_start "Starting Django project creator..."
 
@@ -160,7 +175,7 @@ fi
 
 #Activating virtualenv installation
 echo_progress_start "Activating virtualenv..."
-if source .env/bin/activate >> $logfile; then
+if source $activation_path >> $logfile; then
     echo_progress_done "Activated virtualenv."
 else
     echo_error "Activating virtualenv failed."
