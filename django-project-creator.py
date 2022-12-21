@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 from venv import create
 import urllib.request
 from subprocess import check_call, run, DEVNULL
