@@ -67,6 +67,12 @@ def main():
             f"{bcolors.OKGREEN}Created project directory: {bcolors.BOLD}{bcolors.OKBLUE}{project_name}{bcolors.ENDC}"
         )
         logger.info(f"Created project directory: {project_name}")
+    except FileExistsError as ex:
+        print(
+            f"{bcolors.FAIL}Project already exists: {bcolors.BOLD}{project_name}{bcolors.ENDC}"
+        )
+        logger.fatal(ex)
+        exit(1)
     except Exception as ex:
         print(f"{bcolors.BOLD}{bcolors.FAIL}{ex}{bcolors.ENDC}")
         logger.fatal(ex)
