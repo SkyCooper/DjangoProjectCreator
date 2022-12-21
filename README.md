@@ -16,4 +16,4 @@ python django-project-creator.py <project-name>
 
 -   Linux (Bash/ZSH)
 -   macOS (Not tested, but I assume it will work.)
--   Windows (CMD/PowerShell) # GitBash is not supported at the moment.
+-   Windows (CMD/PowerShell/Git-Bash)
