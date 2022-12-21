@@ -265,7 +265,10 @@ def main():
 
         filedata = filedata.replace(
             "'django.contrib.staticfiles',",
-            "'django.contrib.staticfiles',,\n    'main',",
+            "'django.contrib.staticfiles',\n    'main',",
+        ).replace(
+            '"django.contrib.staticfiles",',
+            '"django.contrib.staticfiles",\n    "main",',
         )
 
         with open("./core/settings.py", "w") as file:
