@@ -1,4 +1,4 @@
-from virtualenv import cli_run
+from venv import create
 import urllib.request
 from subprocess import check_call, run, DEVNULL
 import sys
@@ -30,6 +30,9 @@ def main():
     if windows and "bash" in os.environ.get("SHELL"):
         git_bash = True
 
+    if windows:
+        os.system("color")
+
     logfile = f'{os.path.expanduser("~")}/django-project-creator.log'
     logging.basicConfig(
         filename=logfile,
@@ -56,9 +59,6 @@ def main():
         )
         project_name = "django-project"
 
-    if windows:
-        os.system("color")
-
     try:
         os.mkdir(project_name)
         print(
@@ -81,11 +81,34 @@ def main():
         exit(1)
 
     try:
-        cli_run([".venv"])
+        create(".venv")
         print(
             f"{bcolors.OKGREEN}Created virtual environment: {bcolors.BOLD}{bcolors.OKBLUE}{project_name}/.venv{bcolors.ENDC}"
         )
         logger.info(f"Created virtual environment: {project_name}/.venv")
+    except Exception as ex:
+        print(f"{bcolors.BOLD}{bcolors.FAIL}{ex}{bcolors.ENDC}")
+        logger.fatal(ex)
+        exit(1)
+
+    try:
+        print(f"{bcolors.OKCYAN}Installing pip...{bcolors.ENDC}")
+        if windows:
+            run(
+                f".\\.venv\\Scripts\\python -m ensurepip --upgrade",
+                shell=True,
+                stdout=DEVNULL,
+                check=True,
+            )
+        else:
+            run(
+                f"./.venv/bin/python -m ensurepip --upgrade",
+                shell=True,
+                stdout=DEVNULL,
+                check=True,
+            )
+        print(f"{bcolors.OKGREEN}Installed pip.{bcolors.ENDC}")
+        logger.info("Installed pip.")
     except Exception as ex:
         print(f"{bcolors.BOLD}{bcolors.FAIL}{ex}{bcolors.ENDC}")
         logger.fatal(ex)

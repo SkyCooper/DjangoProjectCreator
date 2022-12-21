@@ -1,11 +1,5 @@
 # django-project-creator
 
-## Required packages to run this script
-
-```
-virtualenv
-```
-
 ## How to use
 
 ```bash
