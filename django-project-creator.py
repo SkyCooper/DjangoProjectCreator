@@ -194,7 +194,7 @@ def main():
                 check=True,
             )
         else:
-            run("django-admin startproject core .", shell=True, check=True)
+            run("./.venv/bin/django-admin startproject core .", shell=True, check=True)
         print(f"{bcolors.OKGREEN}Created Django project 'core'.{bcolors.ENDC}")
         logger.info("Created Django project 'core'.")
     except Exception as ex:
@@ -212,7 +212,7 @@ def main():
                 check=True,
             )
         else:
-            run("django-admin startapp main", shell=True, check=True)
+            run("./.venv/bin/django-admin startapp main", shell=True, check=True)
         print(f"{bcolors.OKGREEN}Created Django app 'main'.{bcolors.ENDC}")
         logger.info("Created Django app 'main'.")
     except Exception as ex:
@@ -383,23 +383,6 @@ def home(request):
         print(f"{bcolors.BOLD}{bcolors.FAIL}{ex}{bcolors.ENDC}")
         logger.fatal(ex)
         exit(1)
-
-    # print(f"{bcolors.BOLD}{bcolors.OKCYAN}cd {project_name}{bcolors.ENDC}")
-
-    # if git_bash:
-    #     run(".\\.venv\\Scripts\\deactivate", shell=True, check=True)
-
-    # if git_bash:
-    #     print(
-    #         f"{bcolors.BOLD}{bcolors.OKCYAN}source .venv/Scripts/activate{bcolors.ENDC}"
-    #     )
-    # elif windows:
-    #     print(
-    #         f"{bcolors.BOLD}{bcolors.OKCYAN}.\\.venv\\Scripts\\activate{bcolors.ENDC}"
-    #     )
-    # else:
-    #     print(f"{bcolors.BOLD}{bcolors.OKCYAN}source .venv/bin/activate{bcolors.ENDC}")
-    # exit(0)
 
 
 if __name__ == "__main__":
