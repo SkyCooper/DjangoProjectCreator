@@ -4,7 +4,6 @@ from subprocess import check_call, run, DEVNULL
 import sys
 import os
 import logging
-import psutil
 import signal
 
 
@@ -28,7 +27,7 @@ def main():
     signal.signal(signal.SIGINT, exit_handler)
     windows = True if os.name == "nt" else False
     git_bash = False
-    if windows and psutil.Process(os.getppid()).name() == "bash.exe":
+    if windows and "bash" in os.environ.get("SHELL"):
         git_bash = True
 
     logfile = f'{os.path.expanduser("~")}/django-project-creator.log'
