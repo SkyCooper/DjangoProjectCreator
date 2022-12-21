@@ -27,7 +27,7 @@ def main():
     signal.signal(signal.SIGINT, exit_handler)
     windows = True if os.name == "nt" else False
     git_bash = False
-    if windows and "bash" in os.environ.get("SHELL"):
+    if windows and os.environ.get("SHELL"):
         git_bash = True
 
     if windows:
@@ -265,7 +265,7 @@ def main():
 
         filedata = filedata.replace(
             '"django.contrib.staticfiles",',
-            """"django.contrib.staticfiles",\n    "main",""",
+            '"django.contrib.staticfiles",\n    "main",',
         )
 
         with open("./core/settings.py", "w") as file:
