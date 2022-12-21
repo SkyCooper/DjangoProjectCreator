@@ -4,7 +4,7 @@ from subprocess import check_output, run, DEVNULL
 import sys
 import os
 import logging
-
+import psutil
 
 class bcolors:
     HEADER = "\033[95m"
@@ -20,6 +20,10 @@ class bcolors:
 
 def main():
     windows = True if os.name == "nt" else False
+    git_bash = False
+    if windows and  psutil.Process(os.getppid()).name() == "bash.exe":
+        git_bash = True
+
     logfile = f'{os.path.expanduser("~")}/django-project-creator.log'
     logging.basicConfig(
         filename=logfile,
@@ -71,25 +75,25 @@ def main():
         exit(1)
 
     try:
-        cli_run(["env"])
+        cli_run([".venv"])
         print(
-            f"{bcolors.OKGREEN}Created virtual environment: {bcolors.BOLD}{bcolors.OKBLUE}{project_name}/env{bcolors.ENDC}"
+            f"{bcolors.OKGREEN}Created virtual environment: {bcolors.BOLD}{bcolors.OKBLUE}{project_name}/.venv{bcolors.ENDC}"
         )
-        logger.info(f"Created virtual environment: {project_name}/env")
+        logger.info(f"Created virtual environment: {project_name}/.venv")
     except Exception as ex:
         print(f"{bcolors.BOLD}{bcolors.FAIL}{ex}{bcolors.ENDC}")
         logger.fatal(ex)
         exit(1)
 
     try:
-        if windows:
-            run(".\\env\\Scripts\\activate", stdout=DEVNULL, shell=True, check=True)
+        if windows or git_bash:
+            run(".\\.venv\\Scripts\\activate", stdout=DEVNULL, shell=True, check=True)
         else:
-            run(". ./env/bin/activate", stdout=DEVNULL, shell=True, check=True)
+            run(". ./.venv/bin/activate", stdout=DEVNULL, shell=True, check=True)
         print(
-            f"{bcolors.OKGREEN}Activated virtual environment: {bcolors.BOLD}{bcolors.OKBLUE}{project_name}/env{bcolors.ENDC}"
+            f"{bcolors.OKGREEN}Activated virtual environment: {bcolors.BOLD}{bcolors.OKBLUE}{project_name}/.venv{bcolors.ENDC}"
         )
-        logger.info(f"Activated virtual environment: {project_name}/env")
+        logger.info(f"Activated virtual environment: {project_name}/.venv")
     except Exception as ex:
         print(f"{bcolors.BOLD}{bcolors.FAIL}{ex}{bcolors.ENDC}")
         logger.fatal(ex)
@@ -98,9 +102,9 @@ def main():
     try:
         print(f"{bcolors.OKCYAN}Installing Django...{bcolors.ENDC}")
         if windows:
-            run(f".\\env\\Scripts\\python -m pip install django", shell=True, stdout=DEVNULL, check=True)
+            run(f".\\.venv\\Scripts\\python -m pip install django", shell=True, stdout=DEVNULL, check=True)
         else:
-            run(f"./env/bin/python -m pip install django", shell=True, stdout=DEVNULL, check=True)
+            run(f"./.venv/bin/python -m pip install django", shell=True, stdout=DEVNULL, check=True)
         print(f"{bcolors.OKGREEN}Installed Django.{bcolors.ENDC}")
         logger.info("Installed Django.")
     except Exception as ex:
@@ -111,9 +115,9 @@ def main():
     try:
         print(f"{bcolors.OKCYAN}Creating requirements.txt...{bcolors.ENDC}")
         if windows:
-            run(".\\env\\Scripts\\python -m pip freeze > requirements.txt", shell=True, check=True)
+            run(".\\.venv\\Scripts\\python -m pip freeze > requirements.txt", shell=True, check=True)
         else:
-            run("./env/bin/python -m pip freeze > requirements.txt", shell=True, check=True)
+            run("./.venv/bin/python -m pip freeze > requirements.txt", shell=True, check=True)
         print(f"{bcolors.OKGREEN}Created requirements.txt.{bcolors.ENDC}")
         logger.info("Created requirements.txt.")
         with open("requirements.txt", "r") as reqs:
@@ -129,7 +133,7 @@ def main():
         print(f"{bcolors.OKCYAN}Creating Django project 'main'...{bcolors.ENDC}")
         
         if windows:
-            run(".\\env\\Scripts\\python -m django startproject main .", shell=True, check=True)
+            run(".\\.venv\\Scripts\\python -m django startproject main .", shell=True, check=True)
         else:
             run("django-admin startproject main .", shell=True, check=True)
         print(f"{bcolors.OKGREEN}Created Django project.{bcolors.ENDC}")
@@ -142,9 +146,9 @@ def main():
     try:
         print(f"{bcolors.OKCYAN}Starting Django migration...{bcolors.ENDC}")
         if windows:
-            run(".\\env\\Scripts\\python manage.py migrate", shell=True, check=True)
+            run(".\\.venv\\Scripts\\python manage.py migrate", shell=True, check=True)
         else:
-            run("./env/bin/python manage.py migrate", shell=True, check=True)
+            run("./.venv/bin/python manage.py migrate", shell=True, check=True)
         print(f"{bcolors.OKGREEN}Django migration is successful.{bcolors.ENDC}")
         logger.info("Django migration is successful.")
     except Exception as ex:
@@ -155,9 +159,9 @@ def main():
     try:
         print(f"{bcolors.OKCYAN}Creating superuser...{bcolors.ENDC}")
         if windows:
-            run(".\\env\\Scripts\\python manage.py createsuperuser", shell=True, check=True)
+            run(".\\.venv\\Scripts\\python manage.py createsuperuser", shell=True, check=True)
         else:
-            run("./env/bin/python manage.py createsuperuser", shell=True, check=True)
+            run("./.venv/bin/python manage.py createsuperuser", shell=True, check=True)
         print(f"{bcolors.OKGREEN}Created superuser.{bcolors.ENDC}")
         logger.info("Created superuser.")
     except Exception as ex:
@@ -196,10 +200,15 @@ def main():
     )
     print(f"{bcolors.BOLD}{bcolors.OKCYAN}cd {project_name}{bcolors.ENDC}")
 
-    if windows:
-        print(f"{bcolors.BOLD}{bcolors.OKCYAN}.\\env\\Scripts\\activate{bcolors.ENDC}")
+    if git_bash:
+        run(".\\.venv\\Scripts\\deactivate", shell=True, check=True)
+    
+    if git_bash:
+        print(f"{bcolors.BOLD}{bcolors.OKCYAN}source .venv/Scripts/activate{bcolors.ENDC}")
+    elif windows:
+        print(f"{bcolors.BOLD}{bcolors.OKCYAN}.\\.venv\\Scripts\\activate{bcolors.ENDC}")
     else:
-        print(f"{bcolors.BOLD}{bcolors.OKCYAN}source env/bin/activate{bcolors.ENDC}")
+        print(f"{bcolors.BOLD}{bcolors.OKCYAN}source .venv/bin/activate{bcolors.ENDC}")
     exit(0)
 
 
