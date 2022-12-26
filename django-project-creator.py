@@ -387,11 +387,11 @@ def main():
             "from pathlib import Path\nfrom decouple import config",
         )
         new_data = ""
-        for line in filedata:
+        for line in filedata.splitlines():
             if "SECRET_KEY" in line:
                 new_data += 'SECRET_KEY = config("SECRET_KEY")\n'
             else:
-                new_data += line
+                new_data += line + "\n"
 
         with open("./core/settings.py", "w") as file:
             file.write(new_data)
