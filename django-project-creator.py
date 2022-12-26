@@ -235,7 +235,7 @@ def main():
     try:
         print(f"{bcolors.OKCYAN}Generating Django Secret Key...{bcolors.ENDC}")
 
-        chars = "abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)"
+        chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*(-_=+)"
 
         secret_key = "".join(secrets.choice(chars) for i in range(50))
 
