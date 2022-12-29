@@ -7,6 +7,7 @@ import sys
 import os
 import logging
 import signal
+import secrets
 import platform
 
 
@@ -125,6 +126,29 @@ def main():
         exit(1)
 
     try:
+        print(f"{bcolors.OKCYAN}Updating pip...{bcolors.ENDC}")
+        if windows:
+            run(
+                f".\\.venv\\Scripts\\python -m pip install --upgrade pip",
+                shell=True,
+                stdout=DEVNULL,
+                check=True,
+            )
+        else:
+            run(
+                f"./.venv/bin/python -m pip install --upgrade pip",
+                shell=True,
+                stdout=DEVNULL,
+                check=True,
+            )
+        print(f"{bcolors.OKGREEN}Updated pip.{bcolors.ENDC}")
+        logger.info("Updated pip.")
+    except Exception as ex:
+        print(f"{bcolors.BOLD}{bcolors.FAIL}{ex}{bcolors.ENDC}")
+        logger.fatal(ex)
+        exit(1)
+
+    try:
         if windows or git_bash:
             run(".\\.venv\\Scripts\\activate", stdout=DEVNULL, shell=True, check=True)
         else:
@@ -139,23 +163,46 @@ def main():
         exit(1)
 
     try:
-        print(f"{bcolors.OKCYAN}Installing Django...{bcolors.ENDC}")
+        print(f"{bcolors.OKCYAN}Installing Django Rest Framework...{bcolors.ENDC}")
         if windows:
             run(
-                f".\\.venv\\Scripts\\python -m pip install django",
+                f".\\.venv\\Scripts\\python -m pip install djangorestframework",
                 shell=True,
                 stdout=DEVNULL,
                 check=True,
             )
         else:
             run(
-                f"./.venv/bin/python -m pip install django",
+                f"./.venv/bin/python -m pip install djangorestframework",
                 shell=True,
                 stdout=DEVNULL,
                 check=True,
             )
-        print(f"{bcolors.OKGREEN}Installed Django.{bcolors.ENDC}")
-        logger.info("Installed Django.")
+        print(f"{bcolors.OKGREEN}Installed Django Rest Framework.{bcolors.ENDC}")
+        logger.info("Installed Django Rest Framework.")
+    except Exception as ex:
+        print(f"{bcolors.BOLD}{bcolors.FAIL}{ex}{bcolors.ENDC}")
+        logger.fatal(ex)
+        exit(1)
+
+    try:
+        print(f"{bcolors.OKCYAN}Installing Python-Decouple...{bcolors.ENDC}")
+        if windows:
+            run(
+                f".\\.venv\\Scripts\\python -m pip install python-decouple",
+                shell=True,
+                stdout=DEVNULL,
+                check=True,
+            )
+        else:
+            run(
+                f"./.venv/bin/python -m pip install python-decouple",
+                shell=True,
+                stdout=DEVNULL,
+                check=True,
+            )
+        print(f"{bcolors.OKGREEN}Installed Python-Decouple.{bcolors.ENDC}")
+        logger.info("Installed Python-Decouple.")
     except Exception as ex:
         print(f"{bcolors.BOLD}{bcolors.FAIL}{ex}{bcolors.ENDC}")
         logger.fatal(ex)
@@ -186,6 +233,24 @@ def main():
         print(f"{bcolors.BOLD}{bcolors.FAIL}{ex}{bcolors.ENDC}")
         logger.fatal(ex)
         exit(1)
+
+    try:
+        print(f"{bcolors.OKCYAN}Generating Django Secret Key...{bcolors.ENDC}")
+
+        chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*(-_=+)"
+
+        secret_key = "".join(secrets.choice(chars) for i in range(50))
+
+        print(f"{bcolors.OKCYAN}Creating '.env' file...{bcolors.ENDC}")
+        with open("./.env", "w") as file:
+            file.write(f"SECRET_KEY={secret_key}")
+
+        print(f"{bcolors.OKCYAN}Created '.env' file.{bcolors.ENDC}")
+    except Exception as ex:
+        print(f"{bcolors.BOLD}{bcolors.FAIL}{ex}{bcolors.ENDC}")
+        logger.fatal(ex)
+        exit(1)
+
     try:
         print(f"{bcolors.OKCYAN}Creating Django project 'core'...{bcolors.ENDC}")
 
@@ -269,20 +334,69 @@ def main():
         exit(1)
 
     try:
-        print(f"{bcolors.OKCYAN}Updating settings.py...{bcolors.ENDC}")
+        print(f"{bcolors.OKCYAN}Adding app 'core' to settings.py...{bcolors.ENDC}")
         with open("./core/settings.py", "r") as file:
             filedata = file.read()
 
         filedata = filedata.replace(
             "'django.contrib.staticfiles',",
-            "'django.contrib.staticfiles',\n    'main',",
+            "'django.contrib.staticfiles',\n\n    # my apps\n    'core',",
         ).replace(
             '"django.contrib.staticfiles",',
-            '"django.contrib.staticfiles",\n    "main",',
+            '"django.contrib.staticfiles",\n\n    # my apps\n    "core",',
         )
 
         with open("./core/settings.py", "w") as file:
             file.write(filedata)
+
+        print(f"{bcolors.OKCYAN}Updated settings.py{bcolors.ENDC}")
+    except Exception as ex:
+        print(f"{bcolors.BOLD}{bcolors.FAIL}{ex}{bcolors.ENDC}")
+        logger.fatal(ex)
+        exit(1)
+
+    try:
+        print(f"{bcolors.OKCYAN}Adding restframework to settings.py...{bcolors.ENDC}")
+        with open("./core/settings.py", "r") as file:
+            filedata = file.read()
+
+        filedata = filedata.replace(
+            "'django.contrib.staticfiles',",
+            "'django.contrib.staticfiles',\n\n    # 3rd party apps\n    'rest_framework',",
+        ).replace(
+            '"django.contrib.staticfiles",',
+            '"django.contrib.staticfiles",\n\n    # 3rd party apps\n    "rest_framework",',
+        )
+
+        with open("./core/settings.py", "w") as file:
+            file.write(filedata)
+
+        print(f"{bcolors.OKCYAN}Updated settings.py{bcolors.ENDC}")
+    except Exception as ex:
+        print(f"{bcolors.BOLD}{bcolors.FAIL}{ex}{bcolors.ENDC}")
+        logger.fatal(ex)
+        exit(1)
+
+    try:
+        print(
+            f"{bcolors.OKCYAN}Editing settings.py to use '.env' variables...{bcolors.ENDC}"
+        )
+        with open("./core/settings.py", "r") as file:
+            filedata = file.read()
+
+        filedata = filedata.replace(
+            "from pathlib import Path",
+            "from pathlib import Path\nfrom decouple import config",
+        )
+        new_data = ""
+        for line in filedata.splitlines():
+            if "SECRET_KEY" in line:
+                new_data += 'SECRET_KEY = config("SECRET_KEY")\n'
+            else:
+                new_data += line + "\n"
+
+        with open("./core/settings.py", "w") as file:
+            file.write(new_data)
 
         print(f"{bcolors.OKCYAN}Updated settings.py{bcolors.ENDC}")
     except Exception as ex:
