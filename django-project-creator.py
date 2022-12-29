@@ -7,6 +7,7 @@ import sys
 import os
 import logging
 import signal
+import platform
 
 
 class bcolors:
@@ -27,7 +28,8 @@ def exit_handler(signum, frame):
 
 def main():
     signal.signal(signal.SIGINT, exit_handler)
-    windows = True if os.name == "nt" else False
+    windows = True if platform.system() == "Windows" else False
+    macos = True if platform.system() == "Darwin" else False
     git_bash = False
     if windows and os.environ.get("SHELL"):
         git_bash = True
@@ -194,7 +196,7 @@ def main():
                 check=True,
             )
         else:
-            run("django-admin startproject core .", shell=True, check=True)
+            run("./.venv/bin/django-admin startproject core .", shell=True, check=True)
         print(f"{bcolors.OKGREEN}Created Django project 'core'.{bcolors.ENDC}")
         logger.info("Created Django project 'core'.")
     except Exception as ex:
@@ -212,7 +214,7 @@ def main():
                 check=True,
             )
         else:
-            run("django-admin startapp main", shell=True, check=True)
+            run("./.venv/bin/django-admin startapp main", shell=True, check=True)
         print(f"{bcolors.OKGREEN}Created Django app 'main'.{bcolors.ENDC}")
         logger.info("Created Django app 'main'.")
     except Exception as ex:
@@ -341,23 +343,25 @@ def home(request):
         exit(1)
 
     try:
-        gitignore_url = "https://www.toptal.com/developers/gitignore/api/django"
-        opener = urllib.request.build_opener()
-        opener.addheaders = [
-            (
-                "User-Agent",
-                "Mozilla/5.0 (X11; Linux x86_64; rv:108.0) Gecko/20100101 Firefox/108.0",
-            )
-        ]
-        with opener.open(gitignore_url) as url_file:
-            url_content = url_file.read()
         print(
             f"{bcolors.OKCYAN}Downloading .gitignore for Django project...{bcolors.ENDC}"
         )
-        with opener.open(gitignore_url) as url_file:
-            url_content = url_file.read()
-            with open(".gitignore", "wb") as gitignore:
-                gitignore.write(url_content)
+        gitignore_url = "https://www.toptal.com/developers/gitignore/api/django"
+        if macos:  # I don't like this solution.
+            run(f'curl {gitignore_url} --output ".gitignore"', shell=True, check=True)
+        else:
+            opener = urllib.request.build_opener()
+            opener.addheaders = [
+                (
+                    "User-Agent",
+                    "Mozilla/5.0 (X11; Linux x86_64; rv:108.0) Gecko/20100101 Firefox/108.0",
+                )
+            ]
+
+            with opener.open(gitignore_url) as url_file:
+                url_content = url_file.read()
+                with open(".gitignore", "wb") as gitignore:
+                    gitignore.write(url_content)
 
         print(f"{bcolors.OKGREEN}Downloaded .gitignore successfully.{bcolors.ENDC}")
         logger.info("Downloaded .gitignore successfully.")
@@ -383,23 +387,6 @@ def home(request):
         print(f"{bcolors.BOLD}{bcolors.FAIL}{ex}{bcolors.ENDC}")
         logger.fatal(ex)
         exit(1)
-
-    # print(f"{bcolors.BOLD}{bcolors.OKCYAN}cd {project_name}{bcolors.ENDC}")
-
-    # if git_bash:
-    #     run(".\\.venv\\Scripts\\deactivate", shell=True, check=True)
-
-    # if git_bash:
-    #     print(
-    #         f"{bcolors.BOLD}{bcolors.OKCYAN}source .venv/Scripts/activate{bcolors.ENDC}"
-    #     )
-    # elif windows:
-    #     print(
-    #         f"{bcolors.BOLD}{bcolors.OKCYAN}.\\.venv\\Scripts\\activate{bcolors.ENDC}"
-    #     )
-    # else:
-    #     print(f"{bcolors.BOLD}{bcolors.OKCYAN}source .venv/bin/activate{bcolors.ENDC}")
-    # exit(0)
 
 
 if __name__ == "__main__":
