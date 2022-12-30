@@ -48,6 +48,7 @@ def main():
     )
     logger = logging.getLogger("django-project-creator")
 
+    logger.info("------------START OF LOG------------")
     logger.info("Starting Django Project Creator")
     print(
         f"{bcolors.BOLD}{bcolors.HEADER}Starting Django Project Creator...{bcolors.ENDC}\n"
@@ -484,6 +485,7 @@ def home(request):
         logger.fatal(ex)
         exit(1)
     print(f"\n{bcolors.BOLD}{bcolors.OKGREEN}Created Django project.{bcolors.ENDC}\n")
+    logger.info("-------------END OF LOG-------------\n")
 
     try:
         print(
