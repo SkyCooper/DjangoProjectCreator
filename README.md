@@ -26,4 +26,4 @@ MacOS – Linux için:
 python3 django-project-creator.py <project-name>
 6- Projeniz kuruluma başlayacaktır. Otomatik kurulum sırasında sizden SuperUser için bilgi girmenizi isteyecektir.
 Python projeniz 1 dakikanın altında super-user oluşturulmuş şekilde kullanımınıza hazır hale gelecektir.
-Hepinize güzel bir hafta diliyoruz.
+Hepinize güzel bir hafta diliyoruz..
