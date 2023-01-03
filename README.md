@@ -27,11 +27,9 @@ Kullanım Kılavuzu:
 
 Not:  <project-name> bölümüne <> olmadan istedğiniz proje ismini yazın.
 
-Windows için:
-python django-project-creator.py <project-name>
+Windows için         =>  python django-project-creator.py project-name
 
-MacOS – Linux için:
-python3 django-project-creator.py <project-name>
+MacOS – Linux için   =>  python3 django-project-creator.py project-name
   
 6- Projeniz kuruluma başlayacaktır. Otomatik kurulum sırasında sizden SuperUser için bilgi girmenizi isteyecektir.
 
